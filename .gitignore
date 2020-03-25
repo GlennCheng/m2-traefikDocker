@@ -1,0 +1,5 @@
+/var/mysql/*
+!/var/mysql/dump
+!/var/mysql/dbdata/.gitkeep
+backup/*
+

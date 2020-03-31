@@ -92,11 +92,15 @@ fi
 export DIRNAME=`pwd`;
 export DOCKER_PREFIX=${GIT_COMMIT_HASH}`basename ${DIRNAME,,}`;
 
-echo "containar prefix: ${DOCKER_PREFIX}";
-echo "host: ${HOSTNAME}";
-echo "database host: ${DOCKER_PREFIX}.mysql";
-
 docker-compose config;
+echo "---";
+echo "";
+echo "  # ===============================================================================";
+echo "  #containar prefix:    ${DOCKER_PREFIX}";
+echo "  #host:                ${HOSTNAME}";
+echo "  #database host:       ${DOCKER_PREFIX}.mysql";
+echo "  # ===============================================================================";
+echo "";
 
 while true; do
     read -p "Please make sure the config, Do you want to run the docker according to the above config? [y/n]    :" yn
@@ -104,10 +108,16 @@ while true; do
         [Yy]* ) 
             if [ -z "${DOCKER_PREFIX}" ]
                 then 
-                    docker-compose up ${DEAMON};
+                    docker-compose up ${DEAMON}; echo "docker-compose up ${DEAMON}" > info.txt;
                 else
-                    docker-compose -p ${DOCKER_PREFIX} up ${DEAMON};
+                    docker-compose -p ${DOCKER_PREFIX} up ${DEAMON}; echo "docker-compose -p ${DOCKER_PREFIX} up ${DEAMON}" > info.txt;
             fi
+
+            echo "containar prefix: ${DOCKER_PREFIX}" >> info.txt;
+            echo "host: ${HOSTNAME}" >> info.txt;
+            echo "database host: ${DOCKER_PREFIX}.mysql" >> info.txt;
+            echo "docker-compose -p ${DOCKER_PREFIX} down" >> info.txt;
+
             break;;
 
         [Nn]* )

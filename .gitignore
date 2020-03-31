@@ -1,3 +1,4 @@
+info.txt
 !var/mysql/dump
 var/mysql/dbdata/*
 !var/mysql/dbdata/.gitkeep

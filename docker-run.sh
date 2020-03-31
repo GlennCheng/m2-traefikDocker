@@ -108,15 +108,18 @@ while true; do
         [Yy]* ) 
             if [ -z "${DOCKER_PREFIX}" ]
                 then 
-                    docker-compose up ${DEAMON}; echo "docker-compose up ${DEAMON}" > info.txt;
+                    docker-compose up ${DEAMON}; echo "command for up:    docker-compose up ${DEAMON}" > info.txt;
                 else
-                    docker-compose -p ${DOCKER_PREFIX} up ${DEAMON}; echo "docker-compose -p ${DOCKER_PREFIX} up ${DEAMON}" > info.txt;
+                    docker-compose -p ${DOCKER_PREFIX} up ${DEAMON}; echo "command for up:    docker-compose -p ${DOCKER_PREFIX} up ${DEAMON}" > info.txt;
             fi
 
-            echo "containar prefix: ${DOCKER_PREFIX}" >> info.txt;
-            echo "host: ${HOSTNAME}" >> info.txt;
-            echo "database host: ${DOCKER_PREFIX}.mysql" >> info.txt;
-            echo "docker-compose -p ${DOCKER_PREFIX} down" >> info.txt;
+            echo "command for down:  docker-compose -p ${DOCKER_PREFIX} down" >> info.txt;
+            echo "";
+            echo "  # ===============================================================================" >> info.txt;
+            echo "  #containar prefix: ${DOCKER_PREFIX}" >> info.txt;
+            echo "  #host: ${HOSTNAME}" >> info.txt;
+            echo "  #database host: ${DOCKER_PREFIX}.mysql" >> info.txt;
+            echo "  # ===============================================================================" >> info.txt;
 
             break;;
 

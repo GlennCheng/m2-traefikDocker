@@ -13,7 +13,7 @@ services:
       - "./config/${ENV}/magento/config.php:/app/app/etc/config.php"
       - "./config/${ENV}/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro"
       - "~/.composer/cache:/root/.composer/cache:delegated"
-      - "./composer/auth.json:/root/.composer/auth.json:delegated"
+      - "~/.composer/auth.json:/root/.composer/auth.json:delegated"
       - "./composer/bin/composer:/usr/local/bin/composer:delegated"
     environment:
       VERBOSE: "true"

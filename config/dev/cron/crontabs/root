@@ -23,3 +23,16 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 # 
 # m h  dom mon dow   command
+
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+#~ MAGENTO START f53b52ad6d21cceb72dfa78fb67614fe14f110c58e68412b01508d6a485501c3
+* * * * * root /usr/local/bin/php /app/bin/magento cron:run 2>&1 | grep -v "Ran jobs by schedule" >> /app/var/log/magento.cron.log
+* * * * * root /usr/local/bin/php /app/update/cron.php >> /app/var/log/update.cron.log
+* * * * * root /usr/local/bin/php /app/bin/magento setup:cron:run >> /app/var/log/setup.cron.log
+#~ MAGENTO END f53b52ad6d21cceb72dfa78fb67614fe14f110c58e68412b01508d6a485501c3
+#
+
+

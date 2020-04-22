@@ -14,13 +14,13 @@ usage()
     echo "usage: <docker-run> <local|dev|staging|production> options:<s:|c|d>";
 }
 
-commit_hash()
+prefix()
 {
-    if [ -z "${hash}" ]
+    if [ -z "${prefixarg}" ]
         then
-            export GIT_COMMIT_HASH=`git rev-parse HEAD`;
+            export PREFIX=`git rev-parse HEAD`;
         else
-            export GIT_COMMIT_HASH=${hash};
+            export PREFIX=${prefixarg};
     fi
     
     if [ -z "${DOMAINNAME}" ]
@@ -36,7 +36,7 @@ unset_env()
     unset DIRNAME;
     unset DOMAINNAME;
     unset HOSTNAME;
-    unset GIT_COMMIT_HASH;
+    unset PREFIX;
     unset DOCKER_PREFIX;
 }
 
@@ -63,12 +63,12 @@ do
         s)
             if [ ! -z $OPTARG ]
                 then
-                hash="$OPTARG";
+                prefixarg="$OPTARG";
             fi 
-            commit_hash
+            prefix
             ;;
         c)
-            commit_hash
+            prefix
             ;;
         d)
             DEAMON="-d"
@@ -82,15 +82,16 @@ done
 
 [[ "$no_args" == "true" ]] && { usage; exit 1; }
 
-if [ -z ${GIT_COMMIT_HASH} ]
+export DIRNAME=`pwd`;
+
+if [ -z ${PREFIX} ]
     then
         export HOSTNAME=${DOMAINNAME};
+        export DOCKER_PREFIX=`basename ${DIRNAME,,}`;
     else
-        export HOSTNAME=${GIT_COMMIT_HASH}.${DOMAINNAME};
+        export HOSTNAME=${PREFIX}.${DOMAINNAME};
+        export DOCKER_PREFIX=${PREFIX};
 fi
-
-export DIRNAME=`pwd`;
-export DOCKER_PREFIX=${GIT_COMMIT_HASH}`basename ${DIRNAME,,}`;
 
 docker-compose config;
 echo "---";

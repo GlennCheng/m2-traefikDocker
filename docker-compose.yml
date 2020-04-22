@@ -15,7 +15,7 @@ services:
       - "~/.composer/cache:/root/.composer/cache:delegated"
       - "~/.composer/auth.json:/root/.composer/auth.json:delegated"
       - "./composer/bin/composer:/usr/local/bin/composer:delegated"
-      - "./config/dev/cron/crontabs/root:/var/spool/cron/crontabs/root"
+      - "./config/dev/cron/crontabs/root:/etc/cron.d/root"
     environment:
       VERBOSE: "true"
     networks:
@@ -30,7 +30,7 @@ services:
   cli:
     image: magento/magento-cloud-docker-php:7.2-cli-1.1
     volumes:  *appvolumes
-    command: bash -c "php bin/magento setup:store-config:set --base-url='http://${HOSTNAME}/'; php bin/magento setup:store-config:set --base-url-secure='https://${HOSTNAME}/'; php bin/magento cron:install;service cron start; rm -rf /app/generated/*; tail -f /dev/null"
+    command: bash -c "php bin/magento setup:store-config:set --base-url='http://${HOSTNAME}/'; php bin/magento setup:store-config:set --base-url-secure='https://${HOSTNAME}/'; php bin/magento cron:install;service cron start; crontab /etc/cron.d/root; rm -rf /app/generated/*; tail -f /dev/null"
     links:
       - mysql
     networks:

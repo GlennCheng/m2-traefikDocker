@@ -26,6 +26,10 @@ services:
       - "traefik.docker.network=traefik_default"
       - "traefik.http.routers.${DOCKER_PREFIX:-web}.rule=Host(`${HOSTNAME}`)"
       - "traefik.http.services.${DOCKER_PREFIX:-web}.loadbalancer.server.port=80"
+      - "traefik.http.routers.${DOCKER_PREFIX:-web}.tls=true"
+      - "traefik.http.routers.${DOCKER_PREFIX:-web}.tls.certresolver=letsEncrypt"
+      - "traefik.http.middlewares.${DOCKER_PREFIX:-web}.compress=true"
+      - "traefik.http.routers.${DOCKER_PREFIX:-web}.middlewares=${DOCKER_PREFIX:-web}@docker"
 
   cli:
     image: magento/magento-cloud-docker-php:7.2-cli-1.1

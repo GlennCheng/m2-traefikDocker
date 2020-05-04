@@ -3,17 +3,19 @@ debug = true
 logLevel = "INFO"
 defaultEntryPoints = ["https","http"]
 # The syntax is somewhat esoteric so this is mostly copy-paste
-#[entryPoints]
+[entryPoints]
 
-[entryPoints.http]
-address = ":80"
+    [entryPoints.web]
+    address = ":80"
+        [entryPoints.web.http.redirections.entryPoint]
+         to = "websecure"
+         scheme = "https"
+        #[entryPoints.http.redirect]
+        #entryPoint = "https"
 
-[entryPoints.http.redirect]
-entryPoint = "https"
-
-[entryPoints.https]
-address = ":443"
-[entryPoints.https.tls]
+    [entryPoints.websecure]
+    address = ":443"
+        [entryPoints.websecure.tls]
 
 [docker]
 endpoint = "unix:///var/run/docker.sock"

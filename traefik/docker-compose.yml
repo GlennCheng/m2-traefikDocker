@@ -3,14 +3,14 @@ version: "3.3"
 services:
 
   traiefik:
-#    image: "traefik:latest"
-    image: traefik:v2.0
+    image: "traefik:latest"
+    #image: traefik:v2.0
     restart: unless-stopped
     command: --api
     command: --docker
     command:
       - "--log.level=INFO"
-      - "--configFile=/traefik.toml"
+#      - "--configFile=/traefik.toml"
       - "--api"  
       - "--api.insecure=true"
       - "--providers.docker=true" 
@@ -18,11 +18,12 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.mysql.address=:3306" 
-      - "--certificatesResolvers.letsEncrypt.acme.email=glenn@astralwebinc.com"
-      - "--certificatesResolvers.letsEncrypt.acme.storage=acme.json"
       - "--certificatesResolvers.letsEncrypt.acme.tlsChallenge=true"
-      - "--certificatesResolvers.letsEncrypt.acme.httpChallenge=true"
-      - "--certificatesResolvers.letsEncrypt.acme.httpChallenge.entryPoint=web"
+      - "--certificatesResolvers.letsEncrypt.acme.email=glenn@astralwebinc.com"
+      - "--certificatesResolvers.letsEncrypt.acme.storage=/letsencrypt/acme.json"
+#      - "--certificatesResolvers.letsEncrypt.acme.httpChallenge=true"
+#      - "--certificatesResolvers.letsEncrypt.acme.httpChallenge.entryPoint=web"
+
     networks:
       - "traefik_default"
     ports:
@@ -32,8 +33,7 @@ services:
       - "8080:8080"  
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-#      - "./traefik.toml:/traefik.toml"
-      - "./acme.json:/acme.json"
+      - "./letsencrypt/acme.json:/letsencrypt/acme.json"
     labels:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:traefik.your.domain"

@@ -2,9 +2,24 @@ version: "3.3"
 
 services:
 
+  mysql:
+    image: mysql:5.7
+    links:
+      - "traiefik"
+    env_file: "./env/mysql.env"
+    volumes:
+      - "./var/lib/mysql:/var/lib/mysql"
+      - "./etc/mysql/my.cnf:/etc/mysql/mysql.cnf:delegated"
+    networks:
+      - "traefik_default"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_default"
+      - "traefik.tcp.routers.mysql.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.mysql.entrypoints=mysql"
+
   traiefik:
     image: "traefik:latest"
-    #image: traefik:v2.0
     restart: unless-stopped
     command: --api
     command: --docker

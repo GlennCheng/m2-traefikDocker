@@ -53,25 +53,6 @@ services:
     networks:
       - "network-back"
 
-  mysql:
-    image: mysql:5.7
-    hostname: "${DOCKER_PREFIX}.mysql"
-    environment:
-      MYSQL_ROOT_PASSWORD: "root"
-      MYSQL_DATABASE: "magento"
-      MYSQL_USER: "magento"
-      MYSQL_PASSWORD: "magento"
-    volumes:
-      - "./var/mysql/dbdata:/var/lib/mysql"
-    networks:
-      - "network-back"
-      - "traefik_default"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik_default"
-      - "traefik.tcp.routers.${DOCKER_PREFIX}.rule=HostSNI(`*`)"
-      - "traefik.tcp.routers.${DOCKER_PREFIX}.entrypoints=mysql"
-
 networks:
   traefik_default:
     external: true

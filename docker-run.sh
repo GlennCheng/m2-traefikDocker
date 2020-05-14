@@ -57,7 +57,7 @@ export ENV=$1;
 source ./config/docker-$1-env.sh;
 
 shift;
-while getopts "cds:" arg 
+while getopts "cdn:s:" arg 
 do  
     case $arg in
         s)
@@ -71,8 +71,15 @@ do
             prefix
             ;;
         d)
-            DEAMON="-d"
+            DEAMON="-d";
             ;;
+        n)
+            if [ ! -z $OPTARG ]
+                then
+                NEW_INSTALL="true";
+                DB_NAME="$OPTARG";
+            fi
+            ;;    
         ?)    
             echo "unkonw argument";
             no_args="true";
@@ -91,6 +98,31 @@ if [ -z ${PREFIX} ]
     else
         export HOSTNAME=${PREFIX}.${DOMAINNAME};
         export DOCKER_PREFIX=${PREFIX};
+fi
+
+if [ "${NEW_INSTALL}" == "true" ]
+    then
+        SQL1="GRANT ALL PRIVILEGES ON \\\`${DB_NAME}%\\\` . * TO 'magento'@'%';";
+        SQL2="CREATE DATABASE ${DB_NAME};"
+        export NEW_DATABASE_COMMAND="mysql -h mysql --user='root' --password='magento' -e \\\"${SQL1}\\\"; mysql -h mysql --user='magento' --password='magento' -e \\\"${SQL2}\\\";";
+        export COMPOSER_INSTALL_COMMAND="composer install;";
+        export MAGENTO_INSTALL_COMMAND="\
+            bin/magento setup:install \
+            --db-host=mysql \
+            --db-name=${DB_NAME} \
+            --db-user=magento \
+            --db-password=magento \
+            --base-url=http://${HOSTNAME}/ \
+            --backend-frontname=admin \
+            --admin-firstname=magento \
+            --admin-lastname=admin \
+            --admin-email=glenn@astralwebinc.com \
+            --admin-user=admin \
+            --admin-password=admin123 \
+            --language=en_US \
+            --currency=TWD \
+            --timezone='Asia/Taipei' \
+            --use-rewrites=1;";
 fi
 
 docker-compose config;
@@ -130,4 +162,5 @@ while true; do
             echo "Please answer yes or no.";;
     esac
 done
+
 

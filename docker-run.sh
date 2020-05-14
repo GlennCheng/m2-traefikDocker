@@ -164,3 +164,72 @@ while true; do
 done
 
 
+#install_check();
+if [ "${NEW_INSTALL}" == "true" ]
+    then
+        INTERVAL=0.01
+        TT='—>————————
+——>———————
+———>——————
+————>—————
+—————>————
+——————>———
+———————>——
+————————>—
+—————————>
+————————<—
+———————<——
+——————<———
+—————<————
+————<—————
+———<——————
+——<———————
+—<————————
+<—————————';
+
+        echo -e "\r Installing..."
+        #TIME_NOW=`date -u '+%Y-%m-%dT%H:%M:%S.%NZ'`;
+        TIME_PAST=${TIME_NOW};
+        while [[ $INSTALL_SUCCESS -eq 0 ]]
+        do
+
+            for i in $TT
+            do
+                
+                echo -en "\r";
+                TIME_NOW=`date -u '+%Y-%m-%dT%H:%M:%S.%NZ'`;
+                LOGS=`docker logs -t --since="${TIME_PAST}" --until="${TIME_NOW}" testcreate_cli_1`;
+                docker logs -t --since="${TIME_PAST}" --until="${TIME_NOW}" testcreate_cli_1
+                
+                INSTALL_SUCCESS=`echo $LOGS | grep "Magento installation complete." | wc -l`;
+                #echo "docker logs -t --since=${TIME_PAST} --until=${TIME_NOW} testcreate_cli_1 | grep 'Magento installation complete.' | wc -l"    
+                
+
+
+                case $INSTALL_SUCCESS in
+                    0 )
+                        echo -en "\r Installing...[$i]";
+
+                        sleep ${INTERVAL};
+                        TIME_PAST=${TIME_NOW};
+
+                        ;;
+                    * ) 
+                        echo -en "\r Installing...[$i]";
+
+                        echo -e "\n Install finished, restarting docker...";
+                        docker-compose -p ${DOCKER_PREFIX} up ${DEAMON}
+                        #DONE=true
+                        break;
+                        ;;
+                esac
+
+            done
+        done
+fi
+
+
+
+
+        
+

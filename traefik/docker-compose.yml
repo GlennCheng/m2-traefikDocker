@@ -22,7 +22,7 @@ services:
 #      - "traefik.tcp.routers.mysql.rule=HostSNI(`*`)"
 #      - "traefik.tcp.routers.mysql.entrypoints=mysql"
 
-  traiefik:
+  traefik:
     image: "traefik:latest"
 #    links:
 #      - "mysql"

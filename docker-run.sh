@@ -198,13 +198,10 @@ if [ "${NEW_INSTALL}" == "true" ]
                 
                 echo -en "\r";
                 TIME_NOW=`date -u '+%Y-%m-%dT%H:%M:%S.%NZ'`;
-                LOGS=`docker logs -t --since="${TIME_PAST}" --until="${TIME_NOW}" testcreate_cli_1`;
-                docker logs -t --since="${TIME_PAST}" --until="${TIME_NOW}" testcreate_cli_1
+                LOGS=`docker logs -t --since="${TIME_PAST}" --until="${TIME_NOW}" ${DOCKER_PREFIX}_cli_1`;
+                docker logs -t --since="${TIME_PAST}" --until="${TIME_NOW}" ${DOCKER_PREFIX}_cli_1
                 
                 INSTALL_SUCCESS=`echo $LOGS | grep "Magento installation complete." | wc -l`;
-                #echo "docker logs -t --since=${TIME_PAST} --until=${TIME_NOW} testcreate_cli_1 | grep 'Magento installation complete.' | wc -l"    
-                
-
 
                 case $INSTALL_SUCCESS in
                     0 )

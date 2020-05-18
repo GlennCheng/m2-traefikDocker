@@ -7,7 +7,7 @@ services:
     ports:
       - 3306:3306
     links:
-      - "traiefik"
+      - "traefik"
     env_file: "./env/mysql.env"
     volumes:
       - "./var/run/mysqld:/var/run/mysqld"

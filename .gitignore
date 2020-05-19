@@ -4,3 +4,5 @@ var/mysql/dbdata/*
 !var/mysql/dbdata/.gitkeep
 backup/*
 traefik/var/*
+!traefik/var/.gitkeep
+

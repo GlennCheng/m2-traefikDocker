@@ -4,8 +4,8 @@ services:
 
   mysql:
     image: mysql:5.7
-    ports:
-      - 3306:3306
+#    ports:
+#      - 3306:3306
     links:
       - "traefik"
     env_file: "./env/mysql.env"
@@ -16,11 +16,11 @@ services:
     networks:
       - "network-back"
       - "traefik_default"
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.docker.network=traefik_default"
-#      - "traefik.tcp.routers.mysql.rule=HostSNI(`*`)"
-#      - "traefik.tcp.routers.mysql.entrypoints=mysql"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_default"
+      - "traefik.tcp.routers.mysql.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.mysql.entrypoints=mysql"
 
   traefik:
     image: "traefik:latest"
@@ -50,7 +50,7 @@ services:
     ports:
       - "443:443"
       - "80:80"
-#      - "3306:3306"
+      - "3306:3306"
       - "8080:8080"  
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"

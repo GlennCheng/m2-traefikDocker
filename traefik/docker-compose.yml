@@ -10,7 +10,6 @@ services:
       - "traefik"
     env_file: "./env/mysql.env"
     volumes:
-      - "./var/run/mysqld:/var/run/mysqld"
       - "./var/lib/mysql:/var/lib/mysql"
       - "./etc/mysql/my.cnf:/etc/mysql/mysql.cnf:delegated"
     networks:

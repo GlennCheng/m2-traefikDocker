@@ -5,6 +5,10 @@
 var/mysql/dbdata/*
 !var/mysql/dbdata/.gitkeep
 
+##src
+src/*
+!src/composer.json
+
 ##
 info.txt
 backup/*

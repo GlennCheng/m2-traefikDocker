@@ -8,34 +8,36 @@ services:
       - fpm
     volumes: &appvolumes
       - "./src:/app:delegated"
-      - "./config/dev/cron/crontabs/root:/etc/cron.d/root"
+      #- "./etc/magento_etc/dev/config.php:/app/app/etc/config.php"
+      #- "./etc/nginx/dev:/etc/nginx/conf.d:delegated"
       #- "./config/${ENV}/magento/.user.ini:/app/pub/.user.ini"
       #- "./config/${ENV}/magento/env.php:/app/app/etc/env.php"
       #- "./config/${ENV}/magento/config.php:/app/app/etc/config.php"
       #- "./config/${ENV}/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro"
       - "~/.composer/cache:/root/.composer/cache:delegated"
       - "./composer/auth.json:/root/.composer/auth.json:delegated"
-      #- "./composer/bin/composer:/usr/local/bin/composer:delegated"
+      - "./config/dev/cron/crontabs/root:/etc/cron.d/root"
     environment:
       VERBOSE: "true"
     networks:
       - "network-back"
       - "traefik_default"
-    labels:
+    labels:  #if didn't use varnish 
       - "traefik.enable=true"
       - "traefik.docker.network=traefik_default"
       - "traefik.http.routers.${DOCKER_PREFIX:-web}.rule=Host(`${HOSTNAME:- }`)"
       - "traefik.http.routers.${DOCKER_PREFIX:-web}.tls=true"
       - "traefik.http.routers.${DOCKER_PREFIX:-web}.tls.certresolver=letsEncrypt"
-      - "traefik.http.routers.${DOCKER_PREFIX:-web}.entrypoints=websecure"
-      - "traefik.http.routers.${DOCKER_PREFIX:-web}.middlewares=${DOCKER_PREFIX:-web}@docker"
-      - "traefik.http.services.${DOCKER_PREFIX:-web}.loadbalancer.server.port=80"
-      - "traefik.http.middlewares.${DOCKER_PREFIX:-web}.compress=true"
-
+      #- "traefik.http.routers.${DOCKER_PREFIX:-web}.middlewares=${DOCKER_PREFIX:-web}@docker"
+      #- "traefik.http.services.${DOCKER_PREFIX:-web}.loadbalancer.server.port=80"
+      #- "traefik.http.middlewares.${DOCKER_PREFIX:-web}.compress=true"
+    #ports:
+    #  - "443:443"
+  
   cli:
     image: magento/magento-cloud-docker-php:7.2-cli-1.1
     volumes:  *appvolumes
-    command: bash -c "${NEW_DATABASE_COMMAND:- }${COMPOSER_INSTALL_COMMAND:- }${MAGENTO_INSTALL_COMMAND:- } php bin/magento setup:store-config:set --base-url='https://${HOSTNAME:- }/'; php bin/magento setup:store-config:set --base-url-secure='https://${HOSTNAME:- }/'; php bin/magento c:fl; service cron start; crontab /etc/cron.d/root; rm -rf /app/generated/*; tail -f /dev/null"
+    command: bash -c "${NEW_DATABASE_COMMAND:- }${COMPOSER_INSTALL_COMMAND:- }${MAGENTO_INSTALL_COMMAND:- } php bin/magento setup:store-config:set --base-url='https://${HOSTNAME:- }/'; php bin/magento setup:store-config:set --base-url-secure='https://${HOSTNAME:- }/'; php bin/magento c:fl; rm -rf /app/generated/*; service cron start; crontab /etc/cron.d/root; tail -f /dev/null"
     environment: &appenvironment
       - "VERBOSE=true"
       - "UPDATE_UID_GID=true"

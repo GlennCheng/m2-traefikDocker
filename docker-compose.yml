@@ -35,7 +35,7 @@ services:
   cli:
     image: magento/magento-cloud-docker-php:7.2-cli-1.1
     volumes:  *appvolumes
-    command: bash -c "${NEW_DATABASE_COMMAND:- }${COMPOSER_INSTALL_COMMAND:- }${MAGENTO_INSTALL_COMMAND:- } php bin/magento setup:store-config:set --base-url='https://${HOSTNAME:- }/'; php bin/magento setup:store-config:set --base-url-secure='https://${HOSTNAME:- }/'; php bin/magento c:fl; service cron start; crontab /etc/cron.d/root; rm -rf /app/generated/*; tail -f /dev/null"
+    command: bash -c "${NEW_DATABASE_COMMAND:- }${COMPOSER_INSTALL_COMMAND:- }${MAGENTO_INSTALL_COMMAND:- } php bin/magento setup:store-config:set --base-url='https://${HOSTNAME:- }/'; php bin/magento setup:store-config:set --base-url-secure='https://${HOSTNAME:- }/'; php bin/magento c:fl; service cron start; crontab /etc/cron.d/root; rm -rf /app/generated/*; service sendmail stop; tail -f /dev/null"
     environment: &appenvironment
       - "VERBOSE=true"
       - "UPDATE_UID_GID=true"

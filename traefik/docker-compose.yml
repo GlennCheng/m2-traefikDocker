@@ -16,7 +16,7 @@ services:
       - "network-back"
       - "traefik_default"
     volumes:
-      - ./var/lib/mysql:/var/lib/mysql
+      - ./mysql:/var/lib/mysql
       - "/var/run/mysqld:/var/run/mysqld"
       - ./config/mysql/my.cnf:/etc/alternatives/my.cnf
     labels:
@@ -46,8 +46,8 @@ services:
       - "--certificatesResolvers.letsEncrypt.acme.tlsChallenge=true"
       - "--certificatesResolvers.letsEncrypt.acme.email=glenn@astralwebinc.com"
       - "--certificatesResolvers.letsEncrypt.acme.storage=/letsencrypt/acme.json"
-#      - "--certificatesResolvers.letsEncrypt.acme.httpChallenge=true"
-#      - "--certificatesResolvers.letsEncrypt.acme.httpChallenge.entryPoint=web"
+      - "--certificatesResolvers.letsEncrypt.acme.httpChallenge=true"
+      - "--certificatesResolvers.letsEncrypt.acme.httpChallenge.entryPoint=web"
 
     networks:
       - "traefik_default"

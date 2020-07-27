@@ -17,11 +17,12 @@ address = ":443"
 
 [docker]
 endpoint = "unix:///var/run/docker.sock"
+domain = "localhost-carrefour.com"
 watch = true
 exposedbydefault = false
 
 [acme]
-email = "glenn@astralwebinc.com"
+email = "test@test.com"
 #storage = "/acme.json"
 # problems with let's encrypt? You can use this staging environment,
 # if you have to do a lot of trial and error:
@@ -35,4 +36,4 @@ entryPoint = "http"
 [web]
 # Web administration port, proxied in docker-compose.yml
 address = ":80"
-#© 2020 GitHub, Inc.
+© 2020 GitHub, Inc.

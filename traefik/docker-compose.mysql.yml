@@ -2,77 +2,69 @@ version: "3.3"
 
 services:
 
-
   mysql:
     image: mysql:5.7
+    #command: --max_allowed_packet=32505856
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=magento
+    ports:
+      - 3306:3306
     environment:
       MYSQL_USER: magento
       MYSQL_PASSWORD: magento
       MYSQL_ROOT_PASSWORD: magento
       MYSQL_DATABASE: magento
-    links:
-      - "traefik"
     networks:
       - "network-back"
-      - "traefik_default"
     volumes:
-      - ./var/lib/mysql:/var/lib/mysql
-      - "/var/run/mysqld:/var/run/mysqld"
+      - ./mysql:/var/lib/mysql
       - ./config/mysql/my.cnf:/etc/alternatives/my.cnf
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik_default"
-      - "traefik.tcp.routers.mysql.rule=HostSNI(`*`)"
-      - "traefik.tcp.routers.mysql.entrypoints=mysql"
-
 
   traefik:
     image: "traefik:latest"
-#    links:
-#      - "mysql"
+    image: traefik:v2.2
     restart: unless-stopped
     command: --api
     command: --docker
     command:
       - "--log.level=INFO"
-#      - "--configFile=/traefik.toml"
-      - "--api"
+        #- "--configFile=/traefik.toml"
+      - "--api"  
       - "--api.insecure=true"
-      - "--providers.docker=true"
+      - "--providers.docker=true" 
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.web.address=:80"
-      - "--entrypoints.mysql.address=:3306"
-      - "--certificatesResolvers.letsEncrypt.acme.tlsChallenge=true"
       - "--certificatesResolvers.letsEncrypt.acme.email=glenn@astralwebinc.com"
-      - "--certificatesResolvers.letsEncrypt.acme.storage=/letsencrypt/acme.json"
-#      - "--certificatesResolvers.letsEncrypt.acme.httpChallenge=true"
-#      - "--certificatesResolvers.letsEncrypt.acme.httpChallenge.entryPoint=web"
-
+      - "--certificatesResolvers.letsEncrypt.acme.tlsChallenge=true"
+      - "--certificatesResolvers.letsEncrypt.acme.httpChallenge=true"
+      - "--certificatesResolvers.letsEncrypt.acme.httpChallenge.entryPoint=web"
+      - "--certificatesresolvers.letsEncrypt.acme.storage=/letsencrypt/acme.json"
+ 
     networks:
       - "traefik_default"
     ports:
       - "443:443"
       - "80:80"
-      - "3306:3306"
-      - "8080:8080"
+      - "8080:8080"  
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt/acme.json:/letsencrypt/acme.json"
     labels:
       - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:traefik.your.domain"
+      - "traefik.frontend.rule=Host:traefik.localhost-carrefour.com"
       - "traefik.port=80"
       - "traefik.docker.network=traefik_default"
       - "traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.+}`)"
       - "traefik.http.routers.http_catchall.entrypoints=web"
       - "traefik.http.routers.http_catchall.middlewares=https_redirect"
+      - "traefik.http.middlewares.http_catchall.ipwhitelist.sourcerange=127.0.0.1/32, 61.216.130.37/32, 172.104.166.197/32, 202.39.238.23/32, 61.216.29.36/32, 139.162.5.47/32, 202.39.238.233/32, 223.136.188.253/32"
+      - "traefik.http.routers.http_catchall.middlewares=ipwhitelist@docker"
       - "traefik.http.middlewares.https_redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.https_redirect.redirectscheme.permanent=true"
-
 networks:
-  network-back:
-    external: true
   traefik_default:
     external: true
-
+  network-back:
+    external: true

@@ -20,8 +20,8 @@ services:
       - "~/.composer/cache:/root/.composer/cache:delegated"
       - "~/.composer/cache:/app/var/composer_home/cache:delegated"
     environment:
-      VERBOSE: "true"
-      HOSTNAME: "${HOSTNAME:-}"
+      - "VERBOSE:true"
+      - "HOSTNAME=${HOSTNAME}"
     command: >
             /bin/bash -c
             "envsubst '

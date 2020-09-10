@@ -122,7 +122,10 @@ if [ "${NEW_INSTALL}" == "true" ]
             --language=en_US \
             --currency=TWD \
             --timezone='Asia/Taipei' \
-            --use-rewrites=1;";
+            --use-rewrites=1 \
+	    --search-engine=elasticsearch7 \
+	    --elasticsearch-host=elasticsearch \
+	    --elasticsearch-port=9200;";
 fi
 
 docker-compose config;

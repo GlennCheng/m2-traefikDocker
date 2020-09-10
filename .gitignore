@@ -7,7 +7,7 @@ var/mysql/dbdata/*
 
 ##src
 src/*
-!src/composer.json
+src/composer.json
 
 ##
 info.txt

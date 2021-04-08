@@ -47,10 +47,12 @@ services:
     image: magento/magento-cloud-docker-php:7.4-cli-1.1
     volumes:  *appvolumes
     command: bash -c "${NEW_DATABASE_COMMAND:- }${COMPOSER_INSTALL_COMMAND:- }${MAGENTO_INSTALL_COMMAND:- } php bin/magento setup:store-config:set --base-url='https://${HOSTNAME:- }/'; php bin/magento setup:store-config:set --base-url-secure='https://${HOSTNAME:- }/'; php bin/magento c:fl; service cron start; crontab /etc/cron.d/root; rm -rf /app/generated/*; service sendmail stop; tail -f /dev/null"
+    env_file: ./common.env
     environment: &appenvironment
       - "VERBOSE=true"
       - "UPDATE_UID_GID=true"
       - "MAGENTO_RUN_MODE=developer"
+      - "ENABLE_SENDMAIL=true"
     networks:
       - "network-back"
       - "traefik_default"
@@ -58,6 +60,7 @@ services:
   fpm:
     image: magento/magento-cloud-docker-php:7.4-fpm-1.1
     volumes: *appvolumes
+    env_file: ./common.env
     environment: *appenvironment
     networks:
       - "network-back"
@@ -70,15 +73,92 @@ services:
     #- "9300:9300"
     environment:
       - "discovery.type=single-node"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
     networks:
       - "network-back"
-  
-        #  redis:
-        #image: redis
-        #networks:
-        # - "network-back"
+
+  redis:
+    image: 'redis:5.0'
+    volumes:
+      - /data
+    ports:
+      - 6379
+    networks:
+      - "network-back"
+
+#  varnish:
+#    image: 'magento/magento-cloud-docker-varnish:latest-1.0'
+#    environment:
+#      - VIRTUAL_HOST=magento2.docker
+#      - VIRTUAL_PORT=80
+#      - HTTPS_METHOD=noredirect
+##    ports:
+##      - '80:80'
+#    depends_on:
+#      - web
+#    networks:
+#      - "network-back"
+#      - "traefik_default"
+#    volumes:
+#      - '~/data/:/data:ro'
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.docker.network=traefik_default"
+#      - "traefik.http.routers.${DOCKER_PREFIX:-web}.rule=Host(`${HOSTNAME:- }`)"
+#      - "traefik.http.routers.${DOCKER_PREFIX:-web}.tls=true"
+#      - "traefik.http.routers.${DOCKER_PREFIX:-web}.tls.certresolver=letsEncrypt"
+#      - "traefik.http.routers.${DOCKER_PREFIX:-web}.entrypoints=websecure"
+#      - "traefik.http.routers.${DOCKER_PREFIX:-web}.middlewares=${DOCKER_PREFIX:-web}@docker"
+#      - "traefik.http.services.${DOCKER_PREFIX:-web}.loadbalancer.server.port=80"
+#      - "traefik.http.middlewares.${DOCKER_PREFIX:-web}.compress=true"
+#  tls:
+#    image: 'magento/magento-cloud-docker-tls:latest-1.0'
+##    ports:
+##      - '443:443'
+#    external_links:
+#      - 'varnish:varnish'
+#    depends_on:
+#      - varnish
+#    networks:
+#      - "network-back"
+#      - "traefik_default"
+#    volumes:
+#      - '~/data/certs:/certs:ro'
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.docker.network=traefik_default"
+#      - "traefik.http.routers.${DOCKER_PREFIX:-web}.rule=Host(`${HOSTNAME:- }`)"
+#      - "traefik.http.routers.${DOCKER_PREFIX:-web}.tls=true"
+#      - "traefik.http.routers.${DOCKER_PREFIX:-web}.tls.certresolver=letsEncrypt"
+#      - "traefik.http.routers.${DOCKER_PREFIX:-web}.entrypoints=websecure"
+#      - "traefik.http.routers.${DOCKER_PREFIX:-web}.middlewares=${DOCKER_PREFIX:-web}@docker"
+#      - "traefik.http.services.${DOCKER_PREFIX:-web}.loadbalancer.server.port=443"
+#      - "traefik.http.middlewares.${DOCKER_PREFIX:-web}.compress=true"
+
+  cron:
+    image: 'magento/magento-cloud-docker-php:7.4-cli-1.1'
+    hostname: cron.magento2.docker
+    depends_on:
+      - redis
+      - elasticsearch
+    env_file: ./common.env
+    volumes: *appvolumes
+    networks:
+      - "network-back"
+      - "traefik_default"
+    environment:
+      CRONTAB: '* * * * * root cd /app && /usr/local/bin/php bin/magento cron:run >> /app/var/log/cron.log'
+    command: bash -c "/etc/init.d/sendmail start && run-cron"
 
 networks:
+#  magento:
+#    driver: bridge
   traefik_default:
     external: true
   network-back:

@@ -54,7 +54,7 @@ fi
 
 export ENV=$1;
 ##inculde env
-source ./config/docker-$1-env.sh;
+source ./config/docker-env.sh;
 
 shift;
 while getopts "cdn:s:" arg 
@@ -128,7 +128,7 @@ if [ "${NEW_INSTALL}" == "true" ]
 	    --elasticsearch-port=9200;";
 fi
 
-docker-compose config;
+docker-compose -f docker-compose-$ENV.yml config;
 echo "---";
 echo "";
 echo "  # ===============================================================================";
@@ -144,9 +144,9 @@ while true; do
         [Yy]* ) 
             if [ -z "${DOCKER_PREFIX}" ]
                 then 
-                    docker-compose up ${DEAMON}; echo "command for up:    docker-compose up ${DEAMON}" > info.txt;
+                    docker-compose -f docker-compose-$ENV.yml up ${DEAMON}; echo "command for up:    docker-compose -f docker-compose-$ENV.yml up ${DEAMON}" > info.txt;
                 else
-                    docker-compose -p ${DOCKER_PREFIX} up ${DEAMON}; echo "command for up:    docker-compose -p ${DOCKER_PREFIX} up ${DEAMON}" > info.txt;
+                    docker-compose -f docker-compose-$ENV.yml -p ${DOCKER_PREFIX} up ${DEAMON}; echo "command for up:    docker-compose -f docker-compose-$ENV.yml -p ${DOCKER_PREFIX} up ${DEAMON}" > info.txt;
             fi
 
             echo "command for down:  docker-compose -p ${DOCKER_PREFIX} down" >> info.txt;
@@ -218,7 +218,7 @@ if [ "${NEW_INSTALL}" == "true" ]
                         echo -en "\r Installing...[$i]";
 
                         echo -e "\n Install finished, restarting docker...";
-                        docker-compose -p ${DOCKER_PREFIX} up ${DEAMON}
+                        docker-compose -f docker-compose-$ENV.yml -p ${DOCKER_PREFIX} up ${DEAMON}
                         #DONE=true
                         break;
                         ;;

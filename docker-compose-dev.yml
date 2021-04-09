@@ -8,17 +8,15 @@ services:
       - fpm
     volumes: &appvolumes
       - "./src:/app:delegated"
-      - "./config/dev/cron/crontabs/root:/etc/cron.d/root"
-      #- "./config/${ENV}/magento/.user.ini:/app/pub/.user.ini"
-      #- "./config/${ENV}/magento/env.php:/app/app/etc/env.php"
-      #- "./config/${ENV}/magento/config.php:/app/app/etc/config.php"
-      #- "./config/${ENV}/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro"
-      - "./config/${ENV}/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.template:ro"
+      - "./config/cron/crontabs/root:/etc/cron.d/root"
+      #- "./config/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro"
+      - "./config/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.template:ro"
       #- "./composer/bin/composer:/usr/local/bin/composer:delegated"
       - "./composer/auth.json:/root/.composer/auth.json:delegated"
       - "./composer/auth.json:/app/var/composer_home/auth.json:delegated"
       - "~/.composer/cache:/root/.composer/cache:delegated"
       - "~/.composer/cache:/app/var/composer_home/cache:delegated"
+    env_file: ./config/common.env
     environment:
       - "VERBOSE:true"
       - "HOSTNAME=${HOSTNAME}"
@@ -47,7 +45,7 @@ services:
     image: magento/magento-cloud-docker-php:7.4-cli-1.1
     volumes:  *appvolumes
     command: bash -c "${NEW_DATABASE_COMMAND:- }${COMPOSER_INSTALL_COMMAND:- }${MAGENTO_INSTALL_COMMAND:- } php bin/magento setup:store-config:set --base-url='https://${HOSTNAME:- }/'; php bin/magento setup:store-config:set --base-url-secure='https://${HOSTNAME:- }/'; php bin/magento c:fl; service cron start; crontab /etc/cron.d/root; rm -rf /app/generated/*; service sendmail stop; tail -f /dev/null"
-    env_file: ./common.env
+    env_file: ./config/common.env
     environment: &appenvironment
       - "VERBOSE=true"
       - "UPDATE_UID_GID=true"
@@ -60,7 +58,7 @@ services:
   fpm:
     image: magento/magento-cloud-docker-php:7.4-fpm-1.1
     volumes: *appvolumes
-    env_file: ./common.env
+    env_file: ./config/common.env
     environment: *appenvironment
     networks:
       - "network-back"
@@ -147,7 +145,7 @@ services:
     depends_on:
       - redis
       - elasticsearch
-    env_file: ./common.env
+    env_file: ./config/common.env
     volumes: *appvolumes
     networks:
       - "network-back"

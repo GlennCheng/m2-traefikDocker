@@ -108,6 +108,7 @@ if [ "${NEW_INSTALL}" == "true" ]
         export COMPOSER_INSTALL_COMMAND="composer install;";
         export MAGENTO_INSTALL_COMMAND="\
             bin/magento setup:install \
+	    --cleanup-database \
             --db-host=mysql \
             --db-name=${DB_NAME} \
             --db-user=magento \

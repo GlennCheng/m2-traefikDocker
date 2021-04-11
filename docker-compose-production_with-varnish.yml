@@ -13,7 +13,7 @@ services:
       - "magento"
     volumes:
       - ./var/lib/mysql:/var/lib/mysql
-      - /var/run/mysqld:/var/run/mysqld"
+      - /var/run/mysqld:/var/run/mysqld
       - ./config/mysql/my.cnf:/etc/alternatives/my.cnf
 
   web:

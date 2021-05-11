@@ -86,6 +86,9 @@ services:
       nofile:
         soft: 65536
         hard: 65536
+    volumes:
+      - "./config/elasticsearch/plugins:/usr/share/elasticsearch/plugins"
+      - "./config/elasticsearch/config:/usr/share/elasticsearch/config"    
     networks:
       - "magento"
 

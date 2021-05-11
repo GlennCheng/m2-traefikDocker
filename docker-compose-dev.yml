@@ -80,7 +80,7 @@ services:
         hard: 65536
     volumes:
       - "./config/elasticsearch/plugins:/usr/share/elasticsearch/plugins"
-      - "./config/elasticsearch/config:/usr/share/elasticsearch/config"
+      - "./config/elasticsearch/config/analysis-ik:/usr/share/elasticsearch/config/analysis-ik"
     networks:
       - "network-back"
 

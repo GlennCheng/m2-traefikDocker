@@ -100,6 +100,10 @@ server {
     }
 
     location /pub/ {
+        location ~ ^/pub/static/version {
+            rewrite ^/pub/static/(version\d*/)?(.*)$ /pub/static/$2 last;
+        }
+
         location ~ ^/pub/media/(downloadable|customer|import|theme_customization/.*\.xml) {
             deny all;
         }

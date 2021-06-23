@@ -93,11 +93,13 @@ services:
       - "magento"
 
   redis:
-    image: 'redis:5.0'
+    image: 'redis:latest'
     volumes:
       - /data
+      - ./config/redis/sysctl.conf:/etc/sysctl.conf
     ports:
       - 6379
+    restart: always
     networks:
       - "magento"
 
